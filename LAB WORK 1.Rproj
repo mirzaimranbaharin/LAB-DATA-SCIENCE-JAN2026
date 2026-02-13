@@ -1,13 +1,18 @@
-Version: 1.0
+numbers <- 1:20
+squares <- numbers^2
 
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
+print(squares)
 
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
+num1 <- 0.956786
+num2 <- 7.8345901
+rounded_num1 <- round(num1, 2)
+rounded_num2 <- round(num2, 3)
 
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+print(rounded_num1)
+print(rounded_num2)
+
+radius <- as.numeric(readline(prompt = "Enter the radius of the circle: "))
+area <- pi * radius^2
+
+cat("The area of the circle is:", area)
+load("C:/Users/imran/Documents/Universiti Teknologi Petronas/COMPUTER SCIENCE/DEGREE 1ST YEAR 2ND SEM/DATA SCIENCE/lab/LAB WORK 1/.RData")
