@@ -1,13 +1,87 @@
-Version: 1.0
 
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
+# ACTIVITY 1: Vector - Exam Score Analysis
 
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
+exam_scores <- c(33, 24, 54, 94, 16, 89, 60, 6, 77, 61, 13, 44, 26, 24, 73, 73, 90, 39, 90, 54)
 
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+cat("Exam Scores:", exam_scores, "\n\n")
+
+grade_A <- sum(exam_scores >= 90 & exam_scores <= 100)
+grade_B <- sum(exam_scores >= 80 & exam_scores <= 89)
+grade_C <- sum(exam_scores >= 70 & exam_scores <= 79)
+grade_D <- sum(exam_scores >= 60 & exam_scores <= 69)
+grade_E <- sum(exam_scores >= 50 & exam_scores <= 59)
+grade_F <- sum(exam_scores <= 49)
+
+cat("Grade Distribution:\n")
+cat("Score 90-100 | Grade A | Number of students:", grade_A, "\n")
+cat("Score 80-89  | Grade B | Number of students:", grade_B, "\n")
+cat("Score 70-79  | Grade C | Number of students:", grade_C, "\n")
+cat("Score 60-69  | Grade D | Number of students:", grade_D, "\n")
+cat("Score 50-59  | Grade E | Number of students:", grade_E, "\n")
+cat("Score <=49   | Grade F | Number of students:", grade_F, "\n\n")
+
+pass_status <- exam_scores > 49
+
+cat("Pass/Fail Status (TRUE = Pass, FALSE = Fail):\n")
+print(pass_status)
+cat("\n")
+
+cat("Total students who passed:", sum(pass_status), "\n")
+cat("Total students who failed:", sum(!pass_status), "\n\n")
+
+
+# ACTIVITY 2: List - Student Records
+
+student_records <- list(
+  student_names = c("Robert", "Hemsworth", "Scarlett", "Evans", "Pratt", 
+                    "Larson", "Holland", "Paul", "Simu", "Renner"),
+  exam_scores = c(59, 71, 83, 68, 65, 57, 62, 92, 92, 59)
+)
+
+cat("Student Records:\n")
+print(student_records)
+cat("\n")
+
+highest_score <- max(student_records$exam_scores)
+lowest_score <- min(student_records$exam_scores)
+average_score <- mean(student_records$exam_scores)
+
+student_with_highest <- student_records$student_names[student_records$exam_scores == highest_score]
+student_with_lowest <- student_records$student_names[student_records$exam_scores == lowest_score]
+
+cat("Highest Score:", highest_score, "\n")
+cat("Lowest Score:", lowest_score, "\n")
+cat("Average Score:", round(average_score, 2), "\n")
+cat("Student with highest score:", paste(student_with_highest, collapse=", "), "\n")
+cat("Student with lowest score:", paste(student_with_lowest, collapse=", "), "\n\n")
+
+
+# ACTIVITY 3: Extended List - Multiple Subjects
+
+student_records <- list(
+  student_names = c("Robert", "Hemsworth", "Scarlett", "Evans", "Pratt", 
+                    "Larson", "Holland", "Paul", "Simu", "Renner"),
+  exam_scores = c(59, 71, 83, 68, 65, 57, 62, 92, 92, 59),
+  chemistry = c(59, 71, 83, 68, 65, 57, 62, 92, 92, 59),
+  physics = c(89, 86, 65, 52, 60, 67, 40, 77, 90, 61)
+)
+
+cat("Extended Student Records:\n")
+print(student_records)
+cat("\n")
+
+chemistry_fail <- sum(student_records$chemistry <= 49)
+cat("Number of students who failed Chemistry (<=49):", chemistry_fail, "\n")
+
+physics_fail <- sum(student_records$physics <= 49)
+cat("Number of students who failed Physics (<=49):", physics_fail, "\n\n")
+
+highest_chemistry <- max(student_records$chemistry)
+students_best_chemistry <- student_records$student_names[student_records$chemistry == highest_chemistry]
+cat("Highest Chemistry score:", highest_chemistry, "\n")
+cat("Student(s) with highest Chemistry score:", paste(students_best_chemistry, collapse=", "), "\n\n")
+
+highest_physics <- max(student_records$physics)
+students_best_physics <- student_records$student_names[student_records$physics == highest_physics]
+cat("Highest Physics score:", highest_physics, "\n")
+cat("Student(s) with highest Physics score:", paste(students_best_physics, collapse=", "), "\n\n")
