@@ -1,276 +1,149 @@
 # Activity 1: Factors - Retirement Age Analysis
-> 
-> age = c(55,57,56,52,51,59,58,53,59,55,60,60,60,60,52,55,56,51,60,
-+         52,54,56,52,57,54,56,58,53,53,50,55,51,57,60,57,55,51,50,57,58)
-> 
-> age_factor <- factor(age)
-> 
-> cat("Levels of the age factor:\n")
-Levels of the age factor:
-> print(levels(age_factor))
- [1] "50" "51" "52" "53" "54" "55" "56" "57" "58" "59" "60"
-> cat("\n")
 
-> 
-> cat("Staff Age Distribution:\n")
-Staff Age Distribution:
-> cat("Staff Age | Total number of staff\n")
-Staff Age | Total number of staff
-> cat("----------|----------------------\n")
-----------|----------------------
-> age_table <- table(age)
-> for(i in 1:length(age_table)) {
-+     cat(sprintf("   %2d     |         %d\n", 
-+                 as.numeric(names(age_table)[i]), 
-+                 age_table[i]))
-+ }
-   50     |         2
-   51     |         4
-   52     |         4
-   53     |         3
-   54     |         2
-   55     |         5
-   56     |         4
-   57     |         5
-   58     |         3
-   59     |         2
-   60     |         6
-> cat("\n")
+age = c(55,57,56,52,51,59,58,53,59,55,60,60,60,60,52,55,56,51,60,
+        52,54,56,52,57,54,56,58,53,53,50,55,51,57,60,57,55,51,50,57,58)
 
-> 
-> age_ranges <- cut(age, 
-+                   breaks = c(49, 52, 54, 56, 58, 60), 
-+                   labels = c("50-52", "52-54", "54-56", "56-58", "58-60"),
-+                   include.lowest = TRUE,
-+                   right = TRUE)
-> 
-> cat("Age Range Distribution:\n")
-Age Range Distribution:
-> cat("Age Range | Total number of staff\n")
-Age Range | Total number of staff
-> cat("----------|----------------------\n")
-----------|----------------------
-> range_table <- table(age_ranges)
-> for(i in 1:length(range_table)) {
-+     cat(sprintf("  %s   |         %d\n", 
-+                 names(range_table)[i], 
-+                 range_table[i]))
-+ }
-  50-52   |         10
-  52-54   |         5
-  54-56   |         9
-  56-58   |         8
-  58-60   |         8
-> cat("\n")
+# Convert to factor
+age_factor <- factor(age)
 
-> 
-> cat("CONCLUSIONS:\n")
-CONCLUSIONS:
-> cat("1. Most staff retire at age 60 (", sum(age == 60), " staff)\n", sep="")
-1. Most staff retire at age 60 (6 staff)
-> cat("2. The 58-60 age range has the highest number of retirees (", 
-+     range_table["58-60"], " staff)\n", sep="")
-2. The 58-60 age range has the highest number of retirees (8 staff)
-> cat("3. Early retirement (50-52) is less common (", 
-+     range_table["50-52"], " staff)\n", sep="")
-3. Early retirement (50-52) is less common (10 staff)
-> cat("4. The retirement age distribution shows most staff work until near or at\n")
-4. The retirement age distribution shows most staff work until near or at
-> cat("   the maximum retirement age, suggesting strong retention or late retirement culture.\n\n")
-   the maximum retirement age, suggesting strong retention or late retirement culture.
+# Display levels
+cat("Levels of the age factor:\n")
+print(levels(age_factor))
+cat("\n")
 
-> 
-> 
-> # Activity 2: Matrices - Operations
-> 
-> V1 = c(2,3,1,5,4,6,8,7,9)
-> 
-> Matrix_1 <- matrix(V1, nrow = 3, ncol = 3, byrow = TRUE)
-> cat("Matrix-1:\n")
-Matrix-1:
-> print(Matrix_1)
-     [,1] [,2] [,3]
-[1,]    2    3    1
-[2,]    5    4    6
-[3,]    8    7    9
-> cat("\n")
+# Count frequency for each age
+cat("Staff Age Distribution:\n")
+cat("Staff Age | Total number of staff\n")
+cat("----------|----------------------\n")
+age_table <- table(age)
+for(i in 1:length(age_table)) {
+  cat(sprintf("   %2d     |         %d\n", 
+              as.numeric(names(age_table)[i]), 
+              age_table[i]))
+}
+cat("\n")
 
-> 
-> Matrix_2 <- t(Matrix_1)
-> cat("Matrix-2 (Transpose of Matrix-1):\n")
-Matrix-2 (Transpose of Matrix-1):
-> print(Matrix_2)
-     [,1] [,2] [,3]
-[1,]    2    5    8
-[2,]    3    4    7
-[3,]    1    6    9
-> cat("\n")
+# Divide into 5 ranges (50-52, 52-54, 54-56, 56-58, 58-60)
+age_ranges <- cut(age, 
+                  breaks = c(49, 52, 54, 56, 58, 60), 
+                  labels = c("50-52", "52-54", "54-56", "56-58", "58-60"),
+                  include.lowest = TRUE,
+                  right = TRUE)
 
-> 
-> rownames(Matrix_1) <- c("Row1", "Row2", "Row3")
-> colnames(Matrix_1) <- c("Col1", "Col2", "Col3")
-> 
-> rownames(Matrix_2) <- c("Row1", "Row2", "Row3")
-> colnames(Matrix_2) <- c("Col1", "Col2", "Col3")
-> 
-> cat("Matrix-1 with named rows and columns:\n")
-Matrix-1 with named rows and columns:
-> print(Matrix_1)
-     Col1 Col2 Col3
-Row1    2    3    1
-Row2    5    4    6
-Row3    8    7    9
-> cat("\n")
+# Count frequency for each range
+cat("Age Range Distribution:\n")
+cat("Age Range | Total number of staff\n")
+cat("----------|----------------------\n")
+range_table <- table(age_ranges)
+for(i in 1:length(range_table)) {
+  cat(sprintf("  %s   |         %d\n", 
+              names(range_table)[i], 
+              range_table[i]))
+}
+cat("\n")
 
-> 
-> cat("Matrix-2 with named rows and columns:\n")
-Matrix-2 with named rows and columns:
-> print(Matrix_2)
-     Col1 Col2 Col3
-Row1    2    5    8
-Row2    3    4    7
-Row3    1    6    9
-> cat("\n")
+# Insights/Conclusion
+cat("INSIGHTS AND CONCLUSIONS:\n")
+cat("1. Most staff retire at age 60 (", sum(age == 60), " staff)\n", sep="")
+cat("2. The 58-60 age range has the highest number of retirees (", 
+    range_table["58-60"], " staff)\n", sep="")
+cat("3. Early retirement (50-52) is less common (", 
+    range_table["50-52"], " staff)\n", sep="")
+cat("4. The retirement age distribution shows most staff work until near or at\n")
+cat("   the maximum retirement age, suggesting strong retention or late retirement culture.\n\n")
 
-> 
-> cat("Addition (Matrix-1 + Matrix-2):\n")
-Addition (Matrix-1 + Matrix-2):
-> Matrix_Add <- Matrix_1 + Matrix_2
-> print(Matrix_Add)
-     Col1 Col2 Col3
-Row1    4    8    9
-Row2    8    8   13
-Row3    9   13   18
-> cat("\n")
 
-> 
-> cat("Subtraction (Matrix-1 - Matrix-2):\n")
-Subtraction (Matrix-1 - Matrix-2):
-> Matrix_Sub <- Matrix_1 - Matrix_2
-> print(Matrix_Sub)
-     Col1 Col2 Col3
-Row1    0   -2   -7
-Row2    2    0   -1
-Row3    7    1    0
-> cat("\n")
+# ============================================================================
+# Activity 2: Matrices - Operations
+# ============================================================================
 
-> 
-> cat("Element-wise Multiplication (Matrix-1 * Matrix-2):\n")
-Element-wise Multiplication (Matrix-1 * Matrix-2):
-> Matrix_Mult_Elementwise <- Matrix_1 * Matrix_2
-> print(Matrix_Mult_Elementwise)
-     Col1 Col2 Col3
-Row1    4   15    8
-Row2   15   16   42
-Row3    8   42   81
-> cat("\n")
+cat("\n========== ACTIVITY 2: MATRICES ==========\n\n")
 
-> 
-> cat("Matrix Multiplication (Matrix-1 %*% Matrix-2):\n")
-Matrix Multiplication (Matrix-1 %*% Matrix-2):
-> Matrix_Mult <- Matrix_1 %*% Matrix_2
-> print(Matrix_Mult)
-     Col1 Col2 Col3
-Row1   14   28   46
-Row2   28   77  122
-Row3   46  122  194
-> cat("\n")
+# Given vector
+V1 = c(2,3,1,5,4,6,8,7,9)
 
-> 
-> cat("Division (Matrix-1 / Matrix-2):\n")
-Division (Matrix-1 / Matrix-2):
-> Matrix_Div <- Matrix_1 / Matrix_2
-> print(Matrix_Div)
-         Col1     Col2      Col3
-Row1 1.000000 0.600000 0.1250000
-Row2 1.666667 1.000000 0.8571429
-Row3 8.000000 1.166667 1.0000000
-> cat("\n")
+# Create Matrix-1 (3x3 matrix)
+Matrix_1 <- matrix(V1, nrow = 3, ncol = 3, byrow = TRUE)
+cat("Matrix-1:\n")
+print(Matrix_1)
+cat("\n")
 
-> 
-> 
-> # Activity 3: Arrays - Creation and Access
-> 
-> Array1 <- array(1:24, dim = c(2, 4, 3))
-> cat("Array1 (2 rows, 4 columns, 3 tables):\n")
-Array1 (2 rows, 4 columns, 3 tables):
-> print(Array1)
-, , 1
+# Transpose Matrix-1 to create Matrix-2
+Matrix_2 <- t(Matrix_1)
+cat("Matrix-2 (Transpose of Matrix-1):\n")
+print(Matrix_2)
+cat("\n")
 
-     [,1] [,2] [,3] [,4]
-[1,]    1    3    5    7
-[2,]    2    4    6    8
+# Rename rows and columns
+rownames(Matrix_1) <- c("Row1", "Row2", "Row3")
+colnames(Matrix_1) <- c("Col1", "Col2", "Col3")
 
-, , 2
+rownames(Matrix_2) <- c("Row1", "Row2", "Row3")
+colnames(Matrix_2) <- c("Col1", "Col2", "Col3")
 
-     [,1] [,2] [,3] [,4]
-[1,]    9   11   13   15
-[2,]   10   12   14   16
+cat("Matrix-1 with named rows and columns:\n")
+print(Matrix_1)
+cat("\n")
 
-, , 3
+cat("Matrix-2 with named rows and columns:\n")
+print(Matrix_2)
+cat("\n")
 
-     [,1] [,2] [,3] [,4]
-[1,]   17   19   21   23
-[2,]   18   20   22   24
+# Matrix Operations
+cat("Addition (Matrix-1 + Matrix-2):\n")
+Matrix_Add <- Matrix_1 + Matrix_2
+print(Matrix_Add)
+cat("\n")
 
-> cat("\n")
+cat("Subtraction (Matrix-1 - Matrix-2):\n")
+Matrix_Sub <- Matrix_1 - Matrix_2
+print(Matrix_Sub)
+cat("\n")
 
-> 
-> Array2 <- array(25:54, dim = c(3, 2, 5))
-> cat("Array2 (3 rows, 2 columns, 5 tables):\n")
-Array2 (3 rows, 2 columns, 5 tables):
-> print(Array2)
-, , 1
+cat("Element-wise Multiplication (Matrix-1 * Matrix-2):\n")
+Matrix_Mult_Elementwise <- Matrix_1 * Matrix_2
+print(Matrix_Mult_Elementwise)
+cat("\n")
 
-     [,1] [,2]
-[1,]   25   28
-[2,]   26   29
-[3,]   27   30
+cat("Matrix Multiplication (Matrix-1 %*% Matrix-2):\n")
+Matrix_Mult <- Matrix_1 %*% Matrix_2
+print(Matrix_Mult)
+cat("\n")
 
-, , 2
+cat("Division (Matrix-1 / Matrix-2):\n")
+Matrix_Div <- Matrix_1 / Matrix_2
+print(Matrix_Div)
+cat("\n")
 
-     [,1] [,2]
-[1,]   31   34
-[2,]   32   35
-[3,]   33   36
 
-, , 3
+# ============================================================================
+# Activity 3: Arrays - Creation and Access
+# ============================================================================
 
-     [,1] [,2]
-[1,]   37   40
-[2,]   38   41
-[3,]   39   42
+cat("\n========== ACTIVITY 3: ARRAYS ==========\n\n")
 
-, , 4
+# Create Array1: 4 columns, 2 rows, 3 tables
+Array1 <- array(1:24, dim = c(2, 4, 3))
+cat("Array1 (2 rows, 4 columns, 3 tables):\n")
+print(Array1)
+cat("\n")
 
-     [,1] [,2]
-[1,]   43   46
-[2,]   44   47
-[3,]   45   48
+# Create Array2: 2 columns, 3 rows, 5 tables
+Array2 <- array(25:54, dim = c(3, 2, 5))
+cat("Array2 (3 rows, 2 columns, 5 tables):\n")
+print(Array2)
+cat("\n")
 
-, , 5
+# Access the second row of the second matrix of Array1
+cat("The second row of the second matrix of Array1:\n")
+second_row <- Array1[2, , 2]
+print(second_row)
+cat(second_row, "\n\n")
 
-     [,1] [,2]
-[1,]   49   52
-[2,]   50   53
-[3,]   51   54
-
-> cat("\n")
-
-> 
-> cat("The second row of the second matrix of Array1:\n")
-The second row of the second matrix of Array1:
-> second_row <- Array1[2, , 2]
-> print(second_row)
-[1] 10 12 14 16
-> cat(second_row, "\n\n")
-10 12 14 16 
-
-> 
-> cat("The element in the 3rd row and 2nd column of the 1st matrix of Array2:\n")
-The element in the 3rd row and 2nd column of the 1st matrix of Array2:
-> element <- Array2[3, 2, 1]
-> print(element)
-[1] 30
-> cat(element, "\n\n")
-30 
+# Access the element in the 3rd row and 3rd column of the first matrix of Array2
+# Note: Array2 only has 2 columns, so accessing column 3 would be an error
+# Based on the expected output showing "30", this should be 3rd row, 2nd column
+cat("The element in the 3rd row and 2nd column of the 1st matrix of Array2:\n")
+element <- Array2[3, 2, 1]
+print(element)
+cat(element, "\n\n")
