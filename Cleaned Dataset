@@ -1,0 +1,181 @@
+#lab project data science
+#Mirza Imran bin Baharin (22005917)
+
+# 1. Read and prepare lines
+input_file <- "C:/Users/User/Downloads/Unclean Dataset.csv"
+raw_lines <- readLines(input_file, encoding = "latin1", warn = FALSE)
+raw_lines <- iconv(raw_lines, from = "latin1", to = "UTF-8", sub = "")
+
+header_row <- trimws(strsplit(raw_lines[1], ",")[[1]])
+raw_lines <- raw_lines[-1]
+
+cleaned_list <- list()
+
+# 2. Loop through each row and clean
+for (i in seq_along(raw_lines)) {
+  line <- trimws(raw_lines[i])
+  if (line == "") next
+
+  student_id <- NA; first_name <- NA; last_name <- NA
+  age <- NA; gender <- NA; course <- NA; enroll_date <- NA; total_payment <- NA
+
+  # Scenario A: pipe "|" separator
+  if (grepl("\\|", line)) {
+    parts <- trimws(strsplit(line, "\\|")[[1]])
+    length(parts) <- 8
+
+    student_id    <- parts[1]
+    first_name    <- parts[2]
+    last_name     <- parts[3]
+    age           <- parts[4]
+    gender        <- parts[5]
+    course        <- parts[6]
+    enroll_date   <- parts[7]
+    if (!is.na(parts[8])) total_payment <- strsplit(parts[8], ",")[[1]][1]
+
+  # Scenario B: comma "," separator
+  } else {
+    parsed <- tryCatch(
+      read.csv(text = line, header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE),
+      error = function(e) NULL
+    )
+
+    if (!is.null(parsed) && ncol(parsed) >= 7) {
+      first_name <- as.character(parsed[1, 1])
+      last_name  <- if (ncol(parsed) >= 3) as.character(parsed[1, 3]) else NA
+
+      if ((is.na(last_name) || last_name == "") && grepl(" ", first_name)) {
+        name_parts <- strsplit(first_name, " ")[[1]]
+        first_name <- name_parts[1]
+        last_name  <- paste(name_parts[-1], collapse = " ")
+      }
+
+      age           <- if (ncol(parsed) >= 4) as.character(parsed[1, 4]) else NA
+      gender        <- if (ncol(parsed) >= 5) as.character(parsed[1, 5]) else NA
+      course        <- if (ncol(parsed) >= 6) as.character(parsed[1, 6]) else NA
+      enroll_date   <- if (ncol(parsed) >= 7) as.character(parsed[1, 7]) else NA
+      total_payment <- if (ncol(parsed) >= 8) as.character(parsed[1, 8]) else NA
+    }
+  }
+
+  # 3. Field cleaning
+  student_id <- ifelse(student_id == "", NA, student_id)
+  first_name <- ifelse(first_name == "", NA, first_name)
+  last_name  <- ifelse(last_name  == "", NA, last_name)
+
+  age <- gsub("\\*", "", trimws(age))
+  if (!is.na(gender) && grepl("[0-9]", gender)) {
+    age    <- gsub("[^0-9]", "", gender)
+    gender <- gsub("[0-9\\s]", "", gender)
+  }
+
+  if (!is.na(gender)) {
+    gender <- toupper(substr(trimws(gender), 1, 1))
+    if (!gender %in% c("M", "F")) gender <- NA
+  }
+
+  age_num <- suppressWarnings(as.numeric(age))
+  if (!is.na(age_num) && (age_num < 15 | age_num > 100)) age_num <- NA
+  age <- age_num
+
+  if (is.na(course) || grepl("^[0-9]+$", course))              course <- NA
+  else if (grepl("Learnin", course, ignore.case = TRUE))        course <- "Machine Learning"
+  else if (grepl("Develop", course, ignore.case = TRUE))        course <- "Web Development"
+  else if (grepl("Analy",   course, ignore.case = TRUE))        course <- "Data Analysis"
+  else if (grepl("Science", course, ignore.case = TRUE))        course <- "Data Science"
+  else if (grepl("Cyber",   course, ignore.case = TRUE))        course <- "Cyber Security"
+
+  if (!is.na(enroll_date) && trimws(enroll_date) %in% c("", "NA")) enroll_date <- NA
+
+  if (!is.na(total_payment)) {
+    total_payment <- suppressWarnings(as.numeric(gsub("[^0-9.]", "", total_payment)))
+  }
+
+  cleaned_list[[i]] <- data.frame(
+    Student_ID      = student_id,
+    First_Name      = first_name,
+    Last_Name       = last_name,
+    Age             = age,
+    Gender          = gender,
+    Course          = course,
+    Enrollment_Date = enroll_date,
+    Total_Payments  = total_payment,
+    stringsAsFactors = FALSE
+  )
+}
+
+# 4. Combine, filter, and deduplicate
+df_clean <- do.call(rbind, cleaned_list)
+df_clean <- df_clean[rowSums(is.na(df_clean)) <= 3, ]
+df_clean <- df_clean[
+  !is.na(df_clean$Student_ID) & !is.na(df_clean$First_Name) &
+  !is.na(df_clean$Course)     & !is.na(df_clean$Enrollment_Date), ]
+df_clean <- unique(df_clean)
+
+# 5. Handle duplicate Student IDs
+dup_ids <- which(duplicated(df_clean$Student_ID))
+for (j in seq_along(dup_ids)) {
+  df_clean$Student_ID[dup_ids[j]] <- paste0(df_clean$Student_ID[dup_ids[j]], "-DUP", j)
+}
+
+# 6. Recover messy rows (non-standard IDs or separators)
+messy_raw_lines <- raw_lines[grepl("-DUP|500", raw_lines)]
+
+split_chunks <- lapply(messy_raw_lines, function(x) {
+  pieces <- trimws(unlist(strsplit(x, "[,/|\\\\]", perl = TRUE)))
+  pieces[pieces != ""]
+})
+
+safe_chunks <- split_chunks[sapply(split_chunks, length) == 8]
+
+recovered_rows <- lapply(safe_chunks, function(x) {
+  x <- trimws(gsub("\"", "", x))
+
+  age_index <- which(grepl("^[0-9]{1,3}$", x))[1]
+  if (is.na(age_index)) return(NULL)
+
+  name_parts <- unique(strsplit(paste(x[1:(age_index - 1)], collapse = " "), " ")[[1]])
+  first_name <- name_parts[1]
+  last_name  <- paste(name_parts[-1], collapse = " ")
+
+  data.frame(
+    Student_ID      = NA,
+    First_Name      = first_name,
+    Last_Name       = last_name,
+    Age             = as.numeric(x[age_index]),
+    Gender          = toupper(substr(x[age_index + 1], 1, 1)),
+    Course          = x[age_index + 2],
+    Enrollment_Date = x[age_index + 3],
+    Total_Payments  = as.numeric(gsub("[^0-9.]", "", x[length(x)])),
+    stringsAsFactors = FALSE
+  )
+})
+
+df_recovered <- do.call(rbind, recovered_rows)
+
+# 7. Assign missing IDs and merge
+used_numeric_ids <- suppressWarnings(as.numeric(df_clean$Student_ID))
+used_numeric_ids <- used_numeric_ids[!is.na(used_numeric_ids)]
+missing_ids      <- setdiff(101:237, used_numeric_ids)
+
+df_recovered$Student_ID <- missing_ids[1:nrow(df_recovered)]
+
+final_df <- rbind(df_clean, df_recovered)
+final_df$Student_ID_numeric <- suppressWarnings(as.numeric(sub("-.*", "", final_df$Student_ID)))
+final_df <- final_df[order(final_df$Student_ID_numeric), ]
+final_df$Student_ID_numeric <- NULL
+
+# Fix any remaining out-of-range IDs
+outlier_rows <- which(suppressWarnings(as.numeric(sub("-.*", "", final_df$Student_ID))) > 237)
+if (length(outlier_rows) > 0) {
+  used_numeric_ids <- suppressWarnings(as.numeric(sub("-.*", "", final_df$Student_ID[-outlier_rows])))
+  missing_ids      <- setdiff(101:237, used_numeric_ids[!is.na(used_numeric_ids)])
+  final_df$Student_ID[outlier_rows] <- missing_ids[1:length(outlier_rows)]
+}
+
+# 8. Final checks
+head(final_df, 10)
+summary(final_df)
+cat("Unique IDs:", length(unique(final_df$Student_ID)), "\n")
+cat("Missing IDs:", sum(is.na(final_df$Student_ID)), "\n")
+cat("ID range:", range(suppressWarnings(as.numeric(sub("-.*", "", final_df$Student_ID))), na.rm = TRUE), "\n")
